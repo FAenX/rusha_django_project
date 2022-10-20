@@ -1,0 +1,11 @@
+devops_home: /home/manu/.rusha
+digital_ocean_token: jkdsfkdf
+docker_registry: localhost:5000
+domain: hh
+environment: local
+git_dir: /home/manu/.devops/git
+minikube_dir: /home/manu/.devops/minikube
+production: false
+applications_dir: /home/manu/.devops/applications
+tmp_dir: /home/manu/.devops/tmp
+www_dir: /home/manu/.devops/www
