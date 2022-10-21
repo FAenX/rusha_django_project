@@ -36,7 +36,6 @@ def create_react_git_bare_repo():
 
     # if to dict is empty, return
     if not to_dict:
-        logging.getLogger().setLevel(logging.INFO)
         logging.info('No pending applications')
         return
 
@@ -65,9 +64,11 @@ def main(application_name, application_id):
     # update status to done
     cur = connection.cursor()
     cur.execute(
-        f"""UPDATE rusha_applications_api_nginxconfcreatequeue
-            SET status = 'done'
-            WHERE application_id = {application_id}
+        f"""
+        UPDATE 
+        rusha_applications_api_nginxconfcreatequeue 
+        SET status = 'done' 
+        WHERE application_id ='{application_id}'
         """)
     cur.close()
 
