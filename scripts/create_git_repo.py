@@ -49,7 +49,7 @@ def create_react_git_bare_repo():
 
 
 def main(application_name, application_id):
-    with open(f'rusha_config.yml', 'r') as f:
+    with open(f'home/manu/private/rusha_django/rusha_config.yml', 'r') as f:
         yaml_content = yaml.load(f, Loader=yaml.FullLoader)
         git_dir_path = f"{yaml_content['git_dir']}/{application_name}.git"
         project_path = f"{yaml_content['applications_dir']}/{application_name}"
