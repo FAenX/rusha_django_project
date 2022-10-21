@@ -8,6 +8,7 @@ import logging
 from django.db import connection
 
 from rest_framework import serializers
+from .post_receive_templates import replace_template
 
 class JoinSerializer(serializers.Serializer):
     application_id = serializers.CharField(max_length=100)
@@ -32,16 +33,23 @@ def create_react_git_bare_repo():
     serializer.is_valid(raise_exception=False)
     to_json = json.dumps(serializer.data, indent=4)
     to_dict = json.loads(to_json)
-    print(to_dict)
+
+    # if to dict is empty, return
+    if not to_dict:
+        logging.getLogger().setLevel(logging.INFO)
+        logging.info('No pending applications')
+        return
+
+
     for item in to_dict:
         application_name = item['application_name']
         framework = item['framework']
         application_id = item['application_id']
-        main(application_name)
+        main(application_name, application_id)
     
 
 
-def main(application_name):
+def main(application_name, application_id):
     with open(f'rusha_config.yml', 'r') as f:
         yaml_content = yaml.load(f, Loader=yaml.FullLoader)
         git_dir_path = f"{yaml_content['git_dir']}/{application_name}.git"
@@ -49,53 +57,19 @@ def main(application_name):
         tempdir = f"{yaml_content['tmp_dir']}/{application_name}"
         subprocess.check_call(f'git init --bare --shared=all {git_dir_path}', shell=True)
 
-    template = f'''
-# create a post-receive file
-#!/bin/bash
-# generated automatically
-
-# Deploy the content to the temporary directory
-mkdir -p {tempdir}
-mkdir -p {project_path}
-git --work-tree={tempdir} --git-dir={git_dir_path} checkout -f || exit;
-
-rm -rf {project_path}/*
-cp -r {tempdir}/* {project_path} || exit;
-rm -rf {tempdir} || exit;
-cd {project_path} || exit;
-
-# create a Dockerfile 
-# add multiline string to a file
-cat <<EOF > {project_path}/Dockerfile
-# Name the node stage "builder"
-FROM node:14 AS builder
-# Set working directory
-WORKDIR /app
-# Copy all files from current directory to working dir in image
-COPY . .
-# install node modules and build assets
-RUN npm install && npm run build
-
-# nginx state for serving content
-FROM nginx:alpine
-# Set working directory to nginx asset directory
-WORKDIR /usr/share/nginx/html
-# Remove default nginx static assets
-RUN rm -rf ./*
-# Copy static assets from builder stage
-COPY --from=builder /app/build .
-# Containers run nginx with global directives and daemon off
-ENTRYPOINT ["nginx", "-g", "daemon off;"]
-EOF
-
-# docker build -t react-nginx .;
-# kubectl apply -f {project_path}/k8s.yaml;
-
-
-'''  
-
+    
     with open(f'{git_dir_path}/hooks/post-receive', 'w') as file:
+        template = replace_template(tempdir, project_path, git_dir_path)
         file.write(template)
+
+    # update status to done
+    cur = connection.cursor()
+    cur.execute(
+        f"""UPDATE rusha_applications_api_nginxconfcreatequeue
+            SET status = 'done'
+            WHERE application_id = {application_id}
+        """)
+    cur.close()
 
     subprocess.check_call(f'chmod +x {git_dir_path}/hooks/post-receive', shell=True)
 
