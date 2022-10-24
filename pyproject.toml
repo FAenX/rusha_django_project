@@ -12,6 +12,7 @@ django-mssql = "^1.8"
 mssql-django = "^1.1.3"
 django-cors-headers = "^3.13.0"
 PyYAML = "^6.0"
+ansible = "^6.5.0"
 
 [tool.poetry.dev-dependencies]
 

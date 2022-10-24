@@ -8,6 +8,7 @@ media
 
 mssql*
 crnlog*
+hosts*
 
 # Backup files # 
 *.bak 

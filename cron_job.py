@@ -15,9 +15,9 @@ def main():
         logging.getLogger().setLevel(logging.INFO)
         logging.info('-----------------')
         logging.info('Starting cron job')
-        from scripts.create_git_repo import  create_react_git_bare_repo
+        from scripts.create_git_repo import  main
         
-        create_react_git_bare_repo()
+        main()
     
     except Exception as e:
         raise e

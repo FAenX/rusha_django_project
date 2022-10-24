@@ -1,0 +1,9 @@
+- hosts: do
+  vars:
+    path: $HOME/private/rusha_django
+  tasks:
+    - name: Mssql docker compose
+      shell: docker-compose -f "{{path}}"/mssql.yml up -d
+
+    - name: Build python app
+      shell: local/build.sh    

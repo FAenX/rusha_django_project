@@ -17,7 +17,7 @@ class JoinSerializer(serializers.Serializer):
 
 
 # react app post receive
-def create_react_git_bare_repo():
+def main():
     cur = connection.cursor()
     data = cur.execute(
         f"""SELECT 
@@ -44,12 +44,12 @@ def create_react_git_bare_repo():
         application_name = item['application_name']
         framework = item['framework']
         application_id = item['application_id']
-        main(application_name, application_id)
+        create_git_repo(application_name, application_id)
     
 
 
-def main(application_name, application_id):
-    with open(f'home/manu/private/rusha_django/rusha_config.yml', 'r') as f:
+def create_git_repo(application_name, application_id):
+    with open(f'/home/manu/private/rusha_django/rusha_config.yml', 'r') as f:
         yaml_content = yaml.load(f, Loader=yaml.FullLoader)
         git_dir_path = f"{yaml_content['git_dir']}/{application_name}.git"
         project_path = f"{yaml_content['applications_dir']}/{application_name}"
@@ -69,6 +69,17 @@ def main(application_name, application_id):
         rusha_applications_api_nginxconfcreatequeue 
         SET status = 'done' 
         WHERE application_id ='{application_id}'
+        """)
+    cur.close()
+
+    # update local git repo column on rusha_applications_api_application
+    cur = connection.cursor()
+    cur.execute(
+        f"""
+        UPDATE
+        rusha_applications_api_application
+        SET local_git_repo = '{git_dir_path}'
+        WHERE id = '{application_id}'
         """)
     cur.close()
 
