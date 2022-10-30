@@ -14,6 +14,13 @@ class Application(models.Model):
     description = models.CharField(max_length=200, null=True)
     tag = models.CharField(max_length=200, default='latest')
     date_created = models.DateField(default=django.utils.timezone.now)
+    application_port = models.IntegerField(default=None, null=True)
+    application_host = models.CharField(max_length=200, default=None, null=True)
+    application_domain = models.CharField(max_length=200, default=None, null=True)
+    application_path = models.CharField(max_length=200, default=None, null=True)
+
+    
+    
     def __str__(self):
         return self.application_name
     

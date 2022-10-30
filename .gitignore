@@ -6,8 +6,8 @@ __pycache__
 db.sqlite3
 media
 
-mssql*
-crnlog*
+mssql
+logs/*
 hosts*
 
 # Backup files # 

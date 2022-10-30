@@ -9,4 +9,8 @@
       apt:
         name: docker-compose
         state: present
+    - name: Install Python3.8
+      apt:
+        name: python3.8
+        state: present
    
