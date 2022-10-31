@@ -15,18 +15,24 @@ def main():
         logging.getLogger().setLevel(logging.INFO)
         logging.info('-----------------')
         logging.info('Starting cron job')
-        from create_git_repo import GitRepo
-        from create_nginx_conf import NginxConf
+        from helpers.create_git_repo import GitRepo
+        from helpers.create_nginx_conf import NginxConf
 
 
         
         GitRepo().create_git_repo()
+   
         NginxConf().create_nginx_conf()
     
+
+        logging.info('-----------------')
+    
     except Exception as e:
+        logging.getLogger().setLevel(logging.ERROR)
+        logging.error(e)
         raise e
         
-    logging.info('-----------------')
+    
 
 if __name__ == '__main__':
     main()

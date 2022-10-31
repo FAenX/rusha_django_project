@@ -1,5 +1,9 @@
 # create nginx static files wirh external proxy configuration    
+
 import os
+import logging
+
+from .queries import update_application_status
 
 
 class NginxStaticFilesWithProxyConfiguration:
@@ -9,9 +13,9 @@ class NginxStaticFilesWithProxyConfiguration:
         self.framework = application.framework
         self.id = application.id
         self.application_port = application.application_port
-        self.application_host = application.application_host
-        self.application_domain = application.application_domain
+        self.domain_name = application.domain_name
         self.application_path = application.application_path
+        self.proxy_host_name_and_or_port = application.proxy_host_name_and_or_port
     
     def create_nginx_static_files_with_proxy_configuration(self):
         
@@ -21,31 +25,34 @@ class NginxStaticFilesWithProxyConfiguration:
             # /etc/nginx/sites-enabled/application_name.conf
 
             template = f'''
-            server {{
-                listen 80;
-                server_name {self.application_domain};
-                location /api/ {{
-                    proxy_pass http://{self.application_host}:{self.application_port};
-                    proxy_set_header Host $host;
-                    proxy_set_header X-Real-IP $remote_addr;
-                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                }}
-                location / {{
-                    alias {self.application_path};
-                }}
-            }}
-                        '''
-
+server {{
+    listen 80;
+    server_name {self.domain_name};
+    location / {{
+        proxy_pass {self.proxy_host_name_and_or_port}$uri;
+    }}
+}}
+            '''
+            
             # create /etc/nginx/sites-available/application_name.conf
             with open(f'/etc/nginx/sites-available/{self.application_name}.conf', 'w') as f:
                 f.write(template)
 
-            # create /etc/nginx/sites-enabled/application_name.conf
-            os.symlink(f'/etc/nginx/sites-available/{self.application_name}.conf', 
-                f'/etc/nginx/sites-enabled/{self.application_name}.conf')
+            # create symlink if not exists
+            if not os.path.exists(f'/etc/nginx/sites-enabled/{self.application_name}.conf'):
+                os.symlink(f'/etc/nginx/sites-available/{self.application_name}.conf', f'/etc/nginx/sites-enabled/{self.application_name}.conf')
+
+            # reload nginx if valid
+            # os.system('nginx -t')
+            os.system('systemctl restart nginx')
+            return
+            
+
+            
 
         except Exception as e:
-            print(f'exception {e}')
+            logging.getLogger().setLevel(logging.ERROR)
+            logging.getLogger().error(e)
             raise e
         
     

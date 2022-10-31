@@ -6,7 +6,8 @@
       shell: docker-compose -f "{{path}}"/mssql.yml up -d
 
     - name: crontab entry for python app
+      become: true
       cron:
         name: "python app"
         minute: "*/1"
-        job: "{{path}}/cron_jobs/dequeue_new_applications.py >> {{path}}/dequeue_new_applications_log_$(date +\\%Y\\%m\\%d\\%H).log 2>&1"
+        job: "{{path}}/cron_jobs/dequeue_new_applications.py >> {{path}}/dequeue_new_applications_log_$(date +\\%Y\\%m\\%d).log 2>&1"

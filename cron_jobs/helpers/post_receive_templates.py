@@ -1,7 +1,7 @@
 
 
 
-def replace_template(tempdir, project_path, git_dir_path):
+def replace_template(tempdir, project_path, git_dir_path, port):
  return \
 f'''
 # create a post-receive file
@@ -30,11 +30,30 @@ FROM nginx:alpine
 WORKDIR /usr/share/nginx/html
 RUN rm -rf ./*
 COPY --from=builder /app/build .
+RUN cat /etc/nginx/conf.d/default.conf
+
+# update nginx configuration
+# add multiline string to a file
+RUN cat <<EOF > /etc/nginx/conf.d/default.conf \
+server {{ \
+    listen 80; \
+    server_name localhost; \
+    access_log /var/log/nginx/access.log; \
+    error_log /var/log/nginx/error.log; \
+    location / {{ \
+        root /usr/share/nginx/html; \
+        index $uri $uri/ /index.html; \
+    }} \
+}} 
+
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
 EOF
 
 docker build -t react-nginx .;
-docker run -d -p 3000:80 react-nginx;
+# remove react-nginx docker container and image
+docker stop react-nginx || exit;
+
+docker run -d -p {port}:80 react-nginx;
 # kubectl apply -f {project_path}/k8s.yaml;
 
 

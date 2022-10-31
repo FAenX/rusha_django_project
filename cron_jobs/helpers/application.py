@@ -4,8 +4,6 @@ from typing import Any
 class Application:
     def __init__(self, app_json):
         self.__dict__ = app_json
-
-        print(self.__dict__)
     
     def __setattr__(self, __name: str, __value: Any):
         super().__setattr__(__name, __value)

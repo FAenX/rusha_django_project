@@ -9,6 +9,10 @@ from rest_framework import generics
 
 from .models import Application, NginxConfCreateQueue
 from .serializers import ApplicationSerializer, NginxConfCreateQueueSerializer
+from .helpers.generate_application_path import generate_application_path
+from .helpers.generate_application_port import generate_application_port
+from .helpers.generate_domain_name import generate_domain_name
+from .helpers.get_host_name import get_hostname
 
 # Create your views here.
 
@@ -40,19 +44,27 @@ def deploy_application(request):
             'framework': framework,
             'application_name': application_name
         }
+
+        application_path = generate_application_path(application_name)
+        application_port = generate_application_port()
+        domain_name = generate_domain_name(application_name)
+
+        application_dict['application_path'] = application_path
+        application_dict['application_port'] = application_port
+        application_dict['domain_name'] = domain_name
+        application_dict['proxy_host_name_and_or_port'] = f'{get_hostname()}:{application_port}'
+
+
+
+
         app_serializer = ApplicationSerializer(data=application_dict)
-        print(app_serializer.is_valid())        
         if app_serializer.is_valid():
             a = Application.objects.create(**app_serializer.validated_data)
            
         else:
-            print(application_dict)
-            print(app_serializer.errors)
             return JsonResponse(app_serializer.errors, status=400)
 
         #  insert into NginxConfCreateQueue
-        print(app_serializer.data)
-        print(a.pk)
 
         nginx_queue_dict = {
             'application': a.pk
@@ -61,13 +73,12 @@ def deploy_application(request):
         if nginx_serializer.is_valid():
             NginxConfCreateQueue.objects.create(**nginx_serializer.validated_data)
         else:
-            print(nginx_serializer.errors)
+      
             return JsonResponse(nginx_serializer.errors, status=400)
         return JsonResponse(app_serializer.data, status=201)
     
     except Exception as e:
-        print(f'exception {e}')
-        return JsonResponse({'status': 'failed'}, safe=False)
+        return HttpResponse(e, status=500)
         
 
    

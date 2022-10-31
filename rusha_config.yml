@@ -1,7 +1,9 @@
 devops_home: /home/manu/.rusha
 digital_ocean_token: jkdsfkdf
 docker_registry: localhost:5000
-domain: hh
+host_name: 
+  prefix: http
+  name: localhost
 environment: local
 git_dir: /home/manu/.devops/git
 minikube_dir: /home/manu/.devops/minikube
