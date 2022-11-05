@@ -1,0 +1,12 @@
+version: '3'
+services:
+  rusha_django:
+    build: .
+    container_name: rusha_django
+    volumes:
+      - ./:/code
+    working_dir: /code
+    ports:
+      - "8000:8000"
+    command: bash -c "python manage.py runserver"
+    
