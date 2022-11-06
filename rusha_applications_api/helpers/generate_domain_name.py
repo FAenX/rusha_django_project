@@ -13,7 +13,7 @@ def generate_domain_name(application_name):
 
     """
     try:
-        with open(f'/home/manu/private/rusha_django/rusha_config.yml', 'r') as f:
+        with open(f'rusha_config.yml', 'r') as f:
             yaml_content = yaml.load(f, Loader=yaml.FullLoader)
             host = yaml_content["host_name"]
             domain_name = f"{host['prefix']}://{application_name}.{host['name']}"

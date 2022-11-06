@@ -1,7 +1,6 @@
-#
-
 import json
 import subprocess
+import os
 
 import yaml
 import logging
@@ -9,6 +8,7 @@ from .queries import get_pending_applications, update_application_status, update
 from .post_receive_templates import replace_template
 from .application import Application
 
+HOME = os.environ['RUSHA_HOME']
 
 class GitRepo:
     def create_git_repo(self):
@@ -16,7 +16,7 @@ class GitRepo:
             pending_applications = get_pending_applications()
             for app in pending_applications:
                 application = Application(app)
-                with open(f'/home/manu/private/rusha_django/rusha_config.yml', 'r') as f:
+                with open(f'{HOME}/rusha_config.yml', 'r') as f:
                     yaml_content = yaml.load(f, Loader=yaml.FullLoader)
                     git_dir_path = f"{yaml_content['git_dir']}/{application.application_name}.git"
                     project_path = f"{yaml_content['applications_dir']}/{application.application_name}"

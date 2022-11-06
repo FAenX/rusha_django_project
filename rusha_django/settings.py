@@ -85,7 +85,7 @@ DATABASES = {
      'default': {
         'ENGINE': 'mssql',
         'NAME': 'rusha_database',
-        'HOST': 'localhost',
+        'HOST': 'mssql',
         'USER': 'sa',
         'PASSWORD': 'Your_password123',
         'OPTIONS' : {

@@ -15,8 +15,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.http import HttpResponse
+
+def create_super_user(request):
+    try:
+        from django.contrib.auth.models import User
+        User.objects.create_superuser('admin', 'admin@example.com', 'admin')
+        return HttpResponse('Super user created')
+    except:
+        return HttpResponse('Super user not created')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('app-api/v1/', include('rusha_applications_api.urls')),
+    path('create_super_user/', create_super_user),
 ]

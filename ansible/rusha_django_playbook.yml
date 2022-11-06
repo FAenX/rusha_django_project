@@ -1,13 +1,60 @@
-- hosts: do
+- hosts: local
   vars:
-    path: /home/manu/private/rusha_django
+    path: "{{ lookup('env', 'RUSHA_HOME')}}"
   tasks:
-    - name: Mssql docker compose
-      shell: docker-compose -f "{{path}}"/mssql.yml up -d
+    - name: Install cron
+      become: true
+      apt:
+        name: cron
+        state: present
+    
+    - name: Enable cron
+      become: true
+      service:
+        name: cron
+        state: started
+        enabled: yes
+    
+    - name: Install Nginx
+      become: true
+      apt:
+        name: nginx
+        state: present
 
+    - name: Enable Nginx
+      become: true
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Install Git
+      become: true
+      apt:
+        name: git
+        state: present
+        
+    - name: Make file executable
+      become: true
+      file:
+        path: "{{ path }}/dequeue_new_applications.py"
+        mode: 0755
+
+    - name: Set environment variables
+      become: true
+      lineinfile:
+        path: /etc/environment
+        line: "RUSHA_HOME={{ path }}"
+        state: present
+        create: yes
+        mode: 0644
+        owner: root
+        group: root
+    
+    
     - name: crontab entry for python app
       become: true
       cron:
         name: "python app"
         minute: "*/1"
-        job: "{{path}}/cron_jobs/dequeue_new_applications.py >> {{path}}/dequeue_new_applications_log_$(date +\\%Y\\%m\\%d).log 2>&1"
+        job: "{{path}}/dequeue_new_applications.py >> {{path}}/dequeue_new_applications_log_$(date +\\%Y\\%m\\%d).log 2>&1"

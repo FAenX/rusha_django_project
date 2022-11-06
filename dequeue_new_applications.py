@@ -1,11 +1,9 @@
-#!/home/manu/private/rusha_django/.venv/bin/python
+#!/usr/local/bin/python
 
 import os
 import sys
 import logging
 import django
-
-
 
 
 def main():
@@ -15,8 +13,8 @@ def main():
         logging.getLogger().setLevel(logging.INFO)
         logging.info('-----------------')
         logging.info('Starting cron job')
-        from helpers.create_git_repo import GitRepo
-        from helpers.create_nginx_conf import NginxConf
+        from cron_jobs.helpers.create_git_repo import GitRepo
+        from cron_jobs.helpers.create_nginx_conf import NginxConf
 
 
         

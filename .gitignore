@@ -9,6 +9,9 @@ media
 mssql
 logs/*
 hosts*
+git
+nginx
+static
 
 # Backup files # 
 *.bak 

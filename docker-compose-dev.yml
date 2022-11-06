@@ -7,6 +7,60 @@ services:
       - ./:/code
     working_dir: /code
     ports:
-      - "8000:8000"
-    command: bash -c "python manage.py runserver"
+      - 8000:8000
+    expose:
+      - 8000
+
+    environment:
+      - RUSHA_HOME=/code
+
+    command: bash -c "
+      ansible-playbook -i ansible/hosts.ini ansible/rusha_django_playbook.yml;
+      python manage.py runserver 0.0.0.0:8000;" 
+
+    depends_on:
+      - mssql
+
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    container_name: mssql
+    restart: always
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Your_password123
+    ports:
+      - 1433:1433
+    volumes:
+      - ./mssql:/var/opt/mssql
+      - ./mssql:/docker-entrypoint-initdb.d
+
+  rusha_nginx:
+    image: nginx:latest
+    container_name: rusha_nginx
+    ports:
+      - 80:8001
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - ./static:/static
+    depends_on:
+      - rusha_django
+
+  rusha_git:
+    image: alpine/git
+    container_name: rusha_git
+    volumes:
+      - ./git:/git
+    working_dir: /git
+    command: bash -c "
+      git config --global init.defaultBranch master"
+      
+    
+
+    
+
+
+
+  
+
+
     
