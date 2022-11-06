@@ -8,7 +8,6 @@ media
 
 mssql
 logs/*
-hosts*
 git
 nginx
 static
