@@ -1,1 +1,0 @@
-export RUSHA_HOME=$PWD

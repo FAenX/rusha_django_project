@@ -12,6 +12,7 @@ hosts*
 git
 nginx
 static
+.env*
 
 # Backup files # 
 *.bak 
