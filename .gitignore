@@ -12,6 +12,7 @@ hosts*
 git
 nginx
 static
+applications
 .env*
 
 # Backup files # 

@@ -5,6 +5,8 @@ services:
     container_name: rusha_django
     volumes:
       - ./:/code
+      - ./applications:/applications
+      - ./git:/git
     working_dir: /code
     ports:
       - 8000:8000
@@ -45,14 +47,7 @@ services:
     depends_on:
       - rusha_django
 
-  rusha_git:
-    image: alpine/git
-    container_name: rusha_git
-    volumes:
-      - ./git:/git
-    working_dir: /git
-    command: bash -c "
-      git config --global init.defaultBranch master"
+ 
       
     
 
