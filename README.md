@@ -6,7 +6,7 @@ Install Docker and docker compose then run the following command
 
 Basically i am trying to build an infrastructure that 'high level' looks like the image below, so let the complexity begin...
 
-![high level](https://www.canva.com/design/DAFSsKoNgIc/z-dQVGjoSVN70J9gv8fg3Q/view?utm_content=DAFSsKoNgIc&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
+![high level](https://drive.google.com/uc?export=view&id=1rIn8i7xZXocjQ5AfaQqDeWUk-Y3907Hd)
 
 
 You can create containers using git post-recieve by pushing to a git bare repo in the server.
