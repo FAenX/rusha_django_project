@@ -4,7 +4,9 @@ Install Docker and docker compose then run the following command
 
 `docker-compose -f docker-compose-dev.yml up`
 
-Basically i am trying to build an infrastructure that 'high level' looks like the image below, so let the complexity begin...
+Basically i am trying to build an infrastructure that 'high level' looks like the image below, (apologies for the crudeness)...
+
+Eventually the plan is to replace Docker with k8s.
 
 ![high level](https://drive.google.com/uc?export=view&id=1rIn8i7xZXocjQ5AfaQqDeWUk-Y3907Hd)
 
