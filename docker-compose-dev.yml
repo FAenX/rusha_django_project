@@ -36,16 +36,16 @@ services:
       - ./mssql:/var/opt/mssql
       - ./mssql:/docker-entrypoint-initdb.d
 
-  # rusha_nginx:
-  #   image: nginx:latest
-  #   container_name: rusha_nginx
-  #   ports:
-  #     - 80:8001
-  #   volumes:
-  #     - ./nginx:/etc/nginx/conf.d
-  #     - ./static:/static
-  #   depends_on:
-  #     - rushiwa_django
+  rusha_nginx:
+    image: nginx:latest
+    container_name: rusha_nginx
+    ports:
+      - 80:80
+    volumes:
+      - ./static:/usr/share/nginx/html
+      - ./nginx:/etc/nginx/nginx.conf.d
+    depends_on:
+      - rushiwa_django
   
   rusha_ui: 
     image: node:16
@@ -60,6 +60,10 @@ services:
       - rushiwa_django
     stdin_open: true
     command: bash -c "npm install && npm start"
+
+volumes:
+  nginx:
+
 
  
       
