@@ -1,8 +1,8 @@
 version: '3'
 services:
-  rusha_django:
+  rushiwa_django:
     build: .
-    container_name: rusha_django
+    container_name: rushiwa_django
     volumes:
       - ./:/code
       - ./applications:/applications
@@ -17,7 +17,7 @@ services:
       - RUSHA_HOME=/code
 
     command: bash -c "
-      ansible-playbook -i ansible/hosts.ini ansible/rusha_django_playbook.yml;
+      ansible-playbook -i ansible/hosts.ini ansible/rushiwa_django_playbook.yml;
       python manage.py runserver 0.0.0.0:8000;" 
 
     depends_on:
@@ -36,16 +36,30 @@ services:
       - ./mssql:/var/opt/mssql
       - ./mssql:/docker-entrypoint-initdb.d
 
-  rusha_nginx:
-    image: nginx:latest
-    container_name: rusha_nginx
-    ports:
-      - 80:8001
-    volumes:
-      - ./nginx:/etc/nginx/conf.d
-      - ./static:/static
+  # rusha_nginx:
+  #   image: nginx:latest
+  #   container_name: rusha_nginx
+  #   ports:
+  #     - 80:8001
+  #   volumes:
+  #     - ./nginx:/etc/nginx/conf.d
+  #     - ./static:/static
+  #   depends_on:
+  #     - rushiwa_django
+  
+  rusha_ui: 
+    image: node:16
+    container_name: rusha_ui
+    ports: 
+      - 3000:3000
+    volumes: 
+      - ../rusha-ui/:/src
+    working_dir: /src
+    
     depends_on:
-      - rusha_django
+      - rushiwa_django
+    stdin_open: true
+    command: bash -c "npm install && npm start"
 
  
       
