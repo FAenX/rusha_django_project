@@ -13,8 +13,8 @@ def main():
         logging.getLogger().setLevel(logging.INFO)
         logging.info('-----------------')
         logging.info('Starting cron job')
-        from cron_jobs.helpers.create_git_repo import GitRepo
-        from cron_jobs.helpers.create_nginx_conf import NginxConf
+        from cron_job.helpers.create_git_repo import GitRepo
+        from cron_job.helpers.create_nginx_conf import NginxConf
 
 
         

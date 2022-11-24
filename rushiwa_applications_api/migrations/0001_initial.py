@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
                 ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('status', models.CharField(default='pending', max_length=200)),
                 ('date_created', models.DateField(default=django.utils.timezone.now)),
-                ('application', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='rusha_applications_api.application')),
+                ('application', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='rushiwa_applications_api.application')),
             ],
         ),
     ]

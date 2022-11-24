@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rusha_applications_api', '0001_initial'),
+        ('rushiwa_applications_api', '0001_initial'),
     ]
 
     operations = [

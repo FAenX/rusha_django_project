@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rusha_applications_api', '0008_remove_application_nginx_conf_path'),
+        ('rushiwa_applications_api', '0008_remove_application_nginx_conf_path'),
     ]
 
     operations = [

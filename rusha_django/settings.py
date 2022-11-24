@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
      'rest_framework',
-     'rusha_applications_api',
+     'rushiwa_applications_api',
      'corsheaders'
 ]
 

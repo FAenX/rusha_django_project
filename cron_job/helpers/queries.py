@@ -1,6 +1,6 @@
 from django.db import connection
-from rusha_applications_api import serializers as rusha_applications_api_serializers
-from rusha_applications_api.models import Application
+from rushiwa_applications_api import serializers as rusha_applications_api_serializers
+from rushiwa_applications_api.models import Application
 from django.forms.models import model_to_dict
 
 import json

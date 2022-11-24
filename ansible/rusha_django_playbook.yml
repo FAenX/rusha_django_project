@@ -1,4 +1,4 @@
-- hosts: local
+- hosts: digital_ocean_droplet_a
   vars:
     path: "{{ lookup('env', 'RUSHA_HOME')}}"
   tasks:

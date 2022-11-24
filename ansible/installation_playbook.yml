@@ -1,4 +1,4 @@
-- hosts: do
+- hosts: digital_ocean_droplet_a
   become: true
   tasks:
     - name: Install Docker
@@ -13,4 +13,14 @@
       apt:
         name: python3.8
         state: present
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+    - name: Install git
+      apt:
+        name: git
+        state: present
+
+    
    
