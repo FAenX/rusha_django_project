@@ -51,9 +51,36 @@
           - "--exclude=*.pid"
           - "--exclude=*mssql*"
 
-    - name: install python3 if it doesn't exist
+    - name: Set RUSHA_HOME environment variable
       become: true
-      raw: apt install python3 -y && apt install python3-pip -y      
+      lineinfile:
+        path: /etc/environment
+        line: "RUSHA_HOME={{ remote_dest }}/rusha_django_project"
+        state: present
+        create: yes
+
+    - name: Install python3
+      become: true
+      raw: apt install python3 -y && apt install python3-pip -y     
+
+    - name: Add the Microsoft repository key to the list of trusted keys and add the Microsoft SQL Server Ubuntu repository
+      become: true
+      raw: 'curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
+        && curl https://packages.microsoft.com/config/ubuntu/18.04/prod.list > /etc/apt/sources.list.d/mssql-release.list'
+
+    - name: Update the sources list
+      become: true
+      raw: apt-get update
+
+    - name: Install the SQL Server command-line tools
+      become: true
+      raw: ACCEPT_EULA=Y apt-get install -y msodbcsql17 mssql-tools18 unixodbc-dev
+
+
+    - name: Add SQL Server tools to the path
+      become: true
+      raw: echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bash_profile
+       
 
     - name: Install poetry
       become: true
@@ -63,33 +90,35 @@
 
     - name: Install dependencies
       become: true
-      raw: poetry export -f requirements.txt --without-hashes | pip3 install -r /dev/stdin
+      raw: cd "{{ remote_dest }}"/rusha_django_project && poetry export -f requirements.txt --without-hashes -o requirements.txt && pip3 install -r requirements.txt
+
+    - name: run docker-compose
+      become: true
+      raw: docker-compose -f {{ remote_dest }}/rusha_django_project/docker-compose-dev.yml up -d --build    
+   
 
     - name: Make cron file executable
       become: true
       file:
         path: "{{ remote_dest }}/rusha_django_project/dequeue_new_applications.py"
         mode: 0755
-
-    # - name: Set environment variables
-    #   become: true
-    #   lineinfile:
-    #     path: /etc/environment
-    #     line: "RUSHA_HOME={{ path }}"
-    #     state: present
-    #     create: yes
-    #     mode: 0644
-    #     owner: root
-    #     group: root
-    
     
     - name: crontab entry for python app
       become: true
       cron:
         name: "python app"
         minute: "*/1"
-        job: "{{path}}/rusha_django_project/dequeue_new_applications.py >> {{path}}/rusha_django_project/dequeue_new_applications_log_$(date +\\%Y\\%m\\%d).log 2>&1"
+        job: "{{remote_dest}}/rusha_django_project/dequeue_new_applications.py >> {{remote_dest}}/rusha_django_project/dequeue_new_applications_log_$(date +\\%Y\\%m\\%d).log 2>&1"
 
+    - name: Checkout rusha-ui
+      become: true
+      git:
+        repo: https://github.com/FAenX/rusha-ui.git
+        dest: "{{ remote_dest }}/rusha_ui"
+        version: master
+        
 
-    
+    - name: run docker-compose
+      become: true
+      raw: docker-compose -f {{ remote_dest }}/rusha_django_project/docker-compose-dev.yml up -d    
    
