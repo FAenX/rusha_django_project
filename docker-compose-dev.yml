@@ -58,7 +58,8 @@ services:
     
     depends_on:
       - rushiwa_django
-    stdin_open: true
+    expose: 
+      - 3000
     command: bash -c "npm install && npm start"
 
 volumes:

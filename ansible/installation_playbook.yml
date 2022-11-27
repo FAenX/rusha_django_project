@@ -1,4 +1,7 @@
 - hosts: digital_ocean_droplet_a
+  vars:
+    path: "{{ lookup('env', 'RUSHA_HOME')}}"
+    remote_dest: "{{ lookup('env', 'RUSHA_REMOTE_DEST')}}"
   become: true
   tasks:
     - name: Install Docker
@@ -11,12 +14,8 @@
         name: docker-compose
         state: present
     
-    - name: Install Python3.8
-      apt:
-        name: python3.8
-        state: present
-    
     - name: Install git
+      become: true
       apt:
         name: git
         state: present
@@ -34,22 +33,54 @@
         state: started
         enabled: yes
 
-    - name: Make file executable
+    - name: Copy current directory to remote
+      synchronize:
+        src: "{{ path }}"
+        dest: "{{ remote_dest }}"
+        recursive: yes
+        delete: yes
+        rsync_opts:
+          - "--exclude=.git"
+          - "--exclude=.venv"
+          - "--exclude=logs"
+          - "--exclude=media"
+          - "--exclude=static"
+          - "--exclude=*.pyc"
+          - "--exclude=*.sqlite3"
+          - "--exclude=*.log"
+          - "--exclude=*.pid"
+          - "--exclude=*mssql*"
+
+    - name: install python3 if it doesn't exist
+      become: true
+      raw: apt install python3 -y && apt install python3-pip -y      
+
+    - name: Install poetry
+      become: true
+      pip:
+        name: poetry
+        state: present
+
+    - name: Install dependencies
+      become: true
+      raw: poetry export -f requirements.txt --without-hashes | pip3 install -r /dev/stdin
+
+    - name: Make cron file executable
       become: true
       file:
-        path: "{{ path }}/dequeue_new_applications.py"
+        path: "{{ remote_dest }}/rusha_django_project/dequeue_new_applications.py"
         mode: 0755
 
-    - name: Set environment variables
-      become: true
-      lineinfile:
-        path: /etc/environment
-        line: "RUSHA_HOME={{ path }}"
-        state: present
-        create: yes
-        mode: 0644
-        owner: root
-        group: root
+    # - name: Set environment variables
+    #   become: true
+    #   lineinfile:
+    #     path: /etc/environment
+    #     line: "RUSHA_HOME={{ path }}"
+    #     state: present
+    #     create: yes
+    #     mode: 0644
+    #     owner: root
+    #     group: root
     
     
     - name: crontab entry for python app
@@ -57,7 +88,7 @@
       cron:
         name: "python app"
         minute: "*/1"
-        job: "{{path}}/dequeue_new_applications.py >> {{path}}/dequeue_new_applications_log_$(date +\\%Y\\%m\\%d).log 2>&1"
+        job: "{{path}}/rusha_django_project/dequeue_new_applications.py >> {{path}}/rusha_django_project/dequeue_new_applications_log_$(date +\\%Y\\%m\\%d).log 2>&1"
 
 
     
